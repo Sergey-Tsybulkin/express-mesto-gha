@@ -2,7 +2,7 @@ const User = require('../models/user');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .then((users) => res.status(200).send({ data: users }))
+    .then((users) => res.status(200).send(users))
     .catch(() => res.status(500).send({ message: 'Default error' }));
 };
 
@@ -14,7 +14,7 @@ module.exports.getUserId = (req, res) => {
           .status(404)
           .send({ message: "User with this ID can't be found" });
       }
-      return res.status(200).send({ data: user });
+      return res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -32,7 +32,7 @@ module.exports.getUserId = (req, res) => {
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
-    .then((user) => res.status(200).send({ data: user }))
+    .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({
@@ -57,7 +57,7 @@ module.exports.updateUserProfile = (req, res) => {
           .status(404)
           .send({ message: "User with this ID can't be found" });
       }
-      return res.status(200).send({ data: user });
+      return res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -80,7 +80,7 @@ module.exports.updateUserAvatar = (req, res) => {
           .status(404)
           .send({ message: "User with this ID can't be found" });
       }
-      return res.status(200).send({ data: user });
+      return res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
