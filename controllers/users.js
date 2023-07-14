@@ -51,14 +51,15 @@ module.exports.updateUserProfile = (req, res) => {
     { name, about },
     { new: true, runValidators: true },
   )
-    .then((user) => {
-      if (!user) {
-        return res
-          .status(404)
-          .send({ message: "User with this ID can't be found" });
-      }
-      return res.status(200).send(user);
-    })
+    .then((user) => res.status(200).send(user))
+    // .then((user) => {
+    //   if (!user) {
+    //     return res
+    //       .status(404)
+    //       .send({ message: "User with this ID can't be found" });
+    //   }
+    //   return res.status(200).send(user);
+    // })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res
@@ -74,21 +75,21 @@ module.exports.updateUserProfile = (req, res) => {
 module.exports.updateUserAvatar = (req, res) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
-    .then((user) => {
-      if (!user) {
-        return res
-          .status(404)
-          .send({ message: "User with this ID can't be found" });
-      }
-      return res.status(200).send(user);
-    })
+    .then((user) => res.status(200).send(user))
+    // .then((user) => {
+    //   if (!user) {
+    //     return res
+    //       .status(404)
+    //       .send({ message: "User with this ID can't be found" });
+    //   }
+    //   return res.status(200).send(user);
+    // })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res
           .status(400)
           .send({
-            message:
-              'Posting wrong data card when updating avatar profile',
+            message: 'Posting wrong data card when updating avatar',
           });
       }
       return res.status(500).send({ message: 'Default error' });
