@@ -1,9 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
 const routes = require('./routes/router');
 
 const { PORT = 3000 } = process.env;
 const app = express();
+
+app.use(helmet());
+app.disable('x-powered-by');
 
 app.use(express.json());
 
@@ -25,10 +29,6 @@ mongoose
   .catch(() => {
     console.log('Cannot connect to the DB');
   });
-
-app.get('/', (req, res) => {
-  res.send('Testing');
-});
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
