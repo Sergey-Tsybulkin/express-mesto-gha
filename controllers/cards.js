@@ -83,9 +83,6 @@ module.exports.deleteLikeCard = (req, res) => {
         return res.status(404)
           .send({ message: "Card with this ID can't be found" });
       }
-      return res.status(200).send({ data: card });
-    })
-    .catch((err) => {
       if (err.name === 'CastError') {
         return res
           .status(400)

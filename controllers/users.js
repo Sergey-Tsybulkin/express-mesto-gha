@@ -8,7 +8,6 @@ module.exports.getUsers = (req, res) => {
 
 module.exports.getUserId = (req, res) => {
   User
-
     .findById(req.params.userId)
     .orFail()
     .then((user) => res.status(200).send(user))
@@ -28,6 +27,7 @@ module.exports.getUserId = (req, res) => {
             message: 'Posting wrong data card when finding user',
           });
       }
+
       return res.status(500).send({ message: 'Default error' });
     });
 };
@@ -63,14 +63,16 @@ module.exports.updateUserProfile = (req, res) => {
             message: 'Posting wrong data card when updating profile',
           });
       }
+
       if (err.name === 'DocumentNotFoundError') {
         return res
           .status(404)
           .send({
-            message: 'Пользователь не найден',
+            message: "Can't find user",
           });
       }
-      return res.status(500).send({ message: 'Default error' });
+
+      return res.status(500).send({ message: 'Ошибка по умолчанию' });
     });
 };
 
@@ -86,13 +88,15 @@ module.exports.updateUserAvatar = (req, res) => {
             message: 'Posting wrong data card when updating avatar',
           });
       }
+
       if (err.name === 'DocumentNotFoundError') {
         return res
           .status(404)
           .send({
-            message: 'Пользователь не найден',
+            message: "Can't find user",
           });
       }
+
       return res.status(500).send({ message: 'Default error' });
     });
 };
