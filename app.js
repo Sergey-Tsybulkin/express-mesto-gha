@@ -1,35 +1,56 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
+const bodyParser = require('body-parser');
+const { errors } = require('celebrate');
 
-const routes = require('./routes/router');
+const limiter = require('./middlewares/rateLimiter');
+
+const routeSignup = require('./routes/signup');
+const routeSignin = require('./routes/signin');
+
+const auth = require('./middlewares/auth');
+
+const routeUsers = require('./routes/users');
+const routeCards = require('./routes/cards');
+
+const NotFoundError = require('./errors/NotFoundError');
+const errorHandler = require('./middlewares/errorHandler');
+
+const URL = 'mongodb://127.0.0.1:27017/mestodb';
 
 const { PORT = 3000 } = process.env;
+
+mongoose.set('strictQuery', true);
+mongoose
+  .connect(URL)
+  .then(() => {
+    console.log('Database connected');
+  })
+  .catch(() => {
+    console.log('Failed to connect to DB');
+  });
+
+
 const app = express();
 
 app.use(helmet());
-app.disable('x-powered-by');
-app.use(express.json());
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '64b0257a914036e955d82c86',
-  };
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-  next();
-});
+app.use(limiter);
 
-app.use(routes);
+app.use('/', routeSignup);
+app.use('/', routeSignin);
 
-mongoose
-  .connect('mongodb://127.0.0.1:27017/mestodb')
-  .then(() => {
-    console.log('DB connected');
-  })
-  .catch(() => {
-    console.log('Cannot connect to the DB');
-  });
+app.use(auth);
 
-app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`);
-});
+app.use('/users', routeUsers);
+app.use('/cards', routeCards);
+
+app.use((req, res, next) => next(new NotFoundError('Forbidden page on that URL')));
+app.use(errors());
+app.use(errorHandler);
+
+app.listen(PORT);
