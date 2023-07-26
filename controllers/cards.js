@@ -15,7 +15,7 @@ module.exports.createCard = (req, res) => {
   Card.create({ name, link, owner })
     .then((card) => res.status(201).send(card))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
         res.status(400).send({
           message: 'Posting wrong data when create card',
         });
@@ -52,15 +52,13 @@ module.exports.likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => {
-      if (!card) {
-        return res
-          .status(404)
+    .orFail()
+    .then((card) => res.status(200).send(card))
+    .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
+        return res.status(404)
           .send({ message: "Card with this ID can't be found" });
       }
-      return res.status(200).send(card);
-    })
-    .catch((err) => {
       if (err.name === 'CastError') {
         return res
           .status(400)
@@ -78,10 +76,11 @@ module.exports.deleteLikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => {
-      if (!card) {
-        return res
-          .status(404)
+    .orFail()
+    .then((card) => res.status(200).send(card))
+    .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
+        return res.status(404)
           .send({ message: "Card with this ID can't be found" });
       }
       return res.status(200).send({ data: card });

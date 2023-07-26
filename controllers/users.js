@@ -2,31 +2,33 @@ const User = require('../models/user');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .then((users) => res.status(200).send(users))
+    .then((users) => res.send(users))
     .catch(() => res.status(500).send({ message: 'Default error' }));
 };
 
 module.exports.getUserId = (req, res) => {
   User
+
     .findById(req.params.userId)
-    .then((user) => {
-      if (!user) {
-        return res
-          .status(404)
-          .send({ message: "User with this ID can't be found" });
-      }
-      return res.status(200).send(user);
-    })
+    .orFail()
+    .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res
+        return res
           .status(400)
+          .send({
+            message: "User with this ID can't be found",
+          });
+      }
+
+      if (err.name === 'DocumentNotFoundError') {
+        return res
+          .status(404)
           .send({
             message: 'Posting wrong data card when finding user',
           });
-      } else {
-        res.status(500).send({ message: 'Default error' });
       }
+      return res.status(500).send({ message: 'Default error' });
     });
 };
 
@@ -54,11 +56,18 @@ module.exports.updateUserProfile = (req, res) => {
   )
     .then((user) => res.status(200).send(user))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
         return res
           .status(400)
           .send({
             message: 'Posting wrong data card when updating profile',
+          });
+      }
+      if (err.name === 'DocumentNotFoundError') {
+        return res
+          .status(404)
+          .send({
+            message: 'Пользователь не найден',
           });
       }
       return res.status(500).send({ message: 'Default error' });
@@ -70,11 +79,18 @@ module.exports.updateUserAvatar = (req, res) => {
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
     .then((user) => res.status(200).send(user))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
         return res
           .status(400)
           .send({
             message: 'Posting wrong data card when updating avatar',
+          });
+      }
+      if (err.name === 'DocumentNotFoundError') {
+        return res
+          .status(404)
+          .send({
+            message: 'Пользователь не найден',
           });
       }
       return res.status(500).send({ message: 'Default error' });
