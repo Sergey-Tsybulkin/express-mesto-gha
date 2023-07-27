@@ -1,26 +1,27 @@
 const jwt = require('jsonwebtoken');
-const { SECRET_SIGNING_KEY } = require('../utils/constants');
-const UnauthorizedError = require('../errors/UnauthorizedError');
 
-const error = 'Wrong email or password';
+const someSecretKey = '$2b$10$GWl4u9KstqG57OdgUooKUO1o9hkH9lvXFMOAqpF04j.Pg9H5M9DRS';
+const UnauthorizedError = require('../errors/UnauthorizedError');
 
 module.exports = (req, _, next) => {
   const { authorization } = req.headers;
   const bearer = 'Bearer ';
+  const errorMsg = 'Wrong email or password';
 
   if (!authorization || !authorization.startsWith(bearer)) {
-    return next(new UnauthorizedError(`${error}(${authorization})!`));
+    return next(new UnauthorizedError(`${errorMsg}(${authorization})!`));
   }
 
   const token = authorization.replace(bearer, '');
   let payload;
 
   try {
-    payload = jwt.verify(token, SECRET_SIGNING_KEY);
+    payload = jwt.verify(token, someSecretKey);
   } catch (err) {
-    return next(new UnauthorizedError(`${error}!`));
+    return next(new UnauthorizedError(`${errorMsg}!`));
   }
 
   req.user = payload;
+
   return next();
 };

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
 const { Schema } = mongoose;
-const { URL_REGEX } = require('../utils/constants');
+const { REGEX } = require('../utils/constants');
 
 const userSchema = new Schema(
   {
@@ -12,7 +12,7 @@ const userSchema = new Schema(
       unique: true,
       validate: {
         validator: (email) => /.+@.+\..+/.test(email),
-        message: 'Required to enter an email address',
+        message: 'Необходимо ввести электронный адрес',
       },
     },
     password: {
@@ -21,7 +21,7 @@ const userSchema = new Schema(
       select: false,
       validate: {
         validator: ({ length }) => length >= 6,
-        message: 'Password must be at least 6 characters long',
+        message: 'Длина пароля должна состоять из 6 символов минимум',
       },
     },
     name: {
@@ -29,7 +29,7 @@ const userSchema = new Schema(
       default: 'Жак-Ив Кусто',
       validate: {
         validator: ({ length }) => length >= 2 && length <= 30,
-        message: 'Username must be between 2 and 30 characters long',
+        message: 'Имя пользователя должно быть длиной от 2 до 30 символов',
       },
     },
     about: {
@@ -38,7 +38,7 @@ const userSchema = new Schema(
       validate: {
         validator: ({ length }) => length >= 2 && length <= 30,
         message:
-          'User information must be between 2 and 30 characters long',
+          'Информация о пользователе должна быть длиной от 2 до 30 символов',
       },
     },
     avatar: {
@@ -46,8 +46,8 @@ const userSchema = new Schema(
       default:
         'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
       validate: {
-        validator: (url) => URL_REGEX.test(url),
-        message: 'URL required',
+        validator: (url) => REGEX.test(url),
+        message: 'Необходим URL',
       },
     },
   },

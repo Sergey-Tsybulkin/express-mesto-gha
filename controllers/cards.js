@@ -30,7 +30,6 @@ module.exports.createCard = (req, res, next) => {
 module.exports.deleteCard = (req, res, next) => {
   const { id: cardId } = req.params;
   const { userId } = req.user;
-
   Card
     .findById({
       _id: cardId,
@@ -57,7 +56,6 @@ module.exports.deleteCard = (req, res, next) => {
 module.exports.likeCard = (req, res, next) => {
   const { cardId } = req.params;
   const { userId } = req.user;
-
   Card
     .findByIdAndUpdate(
       cardId,
@@ -74,7 +72,6 @@ module.exports.likeCard = (req, res, next) => {
       if (card) return res.send({ data: card });
       throw new NotFoundError('Card with specified id not found');
     })
-
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new BadRequestError('Incorrect data sent when adding a like to a card'));
@@ -87,7 +84,6 @@ module.exports.likeCard = (req, res, next) => {
 module.exports.deleteLikeCard = (req, res, next) => {
   const { cardId } = req.params;
   const { userId } = req.user;
-
   Card
     .findByIdAndUpdate(
       cardId,

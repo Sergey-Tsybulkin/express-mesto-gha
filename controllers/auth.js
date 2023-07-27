@@ -1,6 +1,5 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
 const User = require('../models/user');
 
 const { SECRET_SIGNING_KEY } = require('../utils/constants');
@@ -12,7 +11,6 @@ module.exports.registrationUser = (req, res, next) => {
   const {
     email, password, name, about, avatar,
   } = req.body;
-
   bcrypt
     .hash(password, 10)
     .then((hash) => User.create({
@@ -24,7 +22,6 @@ module.exports.registrationUser = (req, res, next) => {
     }))
     .then((user) => {
       const { _id } = user;
-
       return res.status(201).send({
         email,
         name,
@@ -54,7 +51,6 @@ module.exports.registrationUser = (req, res, next) => {
 
 module.exports.loginUser = (req, res, next) => {
   const { email, password } = req.body;
-
   User
     .findUserByCredentials(email, password)
     .then(({ _id: userId }) => {
@@ -62,10 +58,8 @@ module.exports.loginUser = (req, res, next) => {
         const token = jwt.sign({ userId }, SECRET_SIGNING_KEY, {
           expiresIn: '7d',
         });
-
         return res.send({ _id: token });
       }
-
       throw new UnauthorizedError('Wrong email or password');
     })
     .catch(next);
