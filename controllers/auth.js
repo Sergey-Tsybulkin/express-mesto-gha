@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
-const { SECRET_SIGNING_KEY } = require('../utils/constants');
+const someSecretKey = '$2b$10$GWl4u9KstqG57OdgUooKUO1o9hkH9lvXFMOAqpF04j.Pg9H5M9DRS';
 const UnauthorizedError = require('../errors/UnauthorizedError');
 const ConflictError = require('../errors/ConflictError');
 const BadRequestError = require('../errors/BadRequestError');
@@ -55,7 +55,7 @@ module.exports.loginUser = (req, res, next) => {
     .findUserByCredentials(email, password)
     .then(({ _id: userId }) => {
       if (userId) {
-        const token = jwt.sign({ userId }, SECRET_SIGNING_KEY, {
+        const token = jwt.sign({ userId }, someSecretKey, {
           expiresIn: '7d',
         });
         return res.send({ _id: token });
